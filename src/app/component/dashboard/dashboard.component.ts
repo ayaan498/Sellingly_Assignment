@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/shared/auth.service';
-import {FormsModule} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 
 interface BankDetail {
+  id?: string;
   bankName: string;
   accountNumber: string;
 }
@@ -17,20 +19,43 @@ export class DashboardComponent implements OnInit {
   bankDetails: BankDetail[] = [];
   bankName: string = '';
   accountNumber: string = '';
-  // @Output() isLogout = new EventEmitter<void>();
-  constructor(private auth : AuthService) { }
+
+  constructor(private auth: AuthService, private firestore: AngularFirestore) { }
+
   addBankDetails() {
     const newBankDetail = { bankName: this.bankName, accountNumber: this.accountNumber };
-    this.bankDetails.push(newBankDetail);
-    this.bankName = '';
-    this.accountNumber = '';
+    this.firestore.collection('bankDetails').add(newBankDetail)
+      .then((docRef) => {
+        console.log('Bank detail added successfully!');
+        this.bankDetails.push({ id: docRef.id, ...newBankDetail });
+        this.bankName = '';
+        this.accountNumber = '';
+      })
+      .catch((error) => {
+        console.error('Error adding bank detail: ', error);
+      });   
   }
-  ngOnInit(): void {
+
+  ngOnInit() {
+    this.firestore.collection<BankDetail>('bank-form').valueChanges().subscribe((data: BankDetail[]) => {
+      this.bankDetails = data;
+    });
     
   }
+  
+  
   removeBankDetails(index: number) {
-    this.bankDetails.splice(index, 1);
+    const docId = this.bankDetails[index].id;
+    this.firestore.collection('bankDetails').doc(docId).delete()
+      .then(() => {
+        console.log('Bank detail deleted successfully!');
+        this.bankDetails.splice(index, 1);
+      })
+      .catch((error) => {
+        console.error('Error deleting bank detail: ', error);
+      });
   }
+  
   logout() {
     this.auth.logout();
   }
