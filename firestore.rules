@@ -1,0 +1,7 @@
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /bankDetails/{document} {
+      allow read, write: if request.auth.token.firebase.hosting.site == 'banking-sellingly.web.app/dashboard';
+    }
+  }
+}
