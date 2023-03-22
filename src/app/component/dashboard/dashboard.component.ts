@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/shared/auth.service';
 import { FormsModule } from '@angular/forms';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
+import { v4 as uuidv4 } from 'uuid';
 
 interface BankDetail {
   id: string;
@@ -20,14 +21,23 @@ export class DashboardComponent implements OnInit {
   bankName: string = '';
   accountNumber: string = '';
 
-  constructor(private auth: AuthService, private firestore: AngularFirestore) { }
+  bankDetailsCollection: AngularFirestoreCollection<BankDetail>;
+
+  constructor(private auth: AuthService, private firestore: AngularFirestore) {
+    this.bankDetailsCollection = this.firestore.collection<BankDetail>('bankDetails');
+  }
 
   addBankDetails() {
-    const newBankDetail = { bankName: this.bankName, accountNumber: this.accountNumber };
-    this.firestore.collection('bankDetails').add(newBankDetail)
+    const newBankDetail: BankDetail = {
+      id: uuidv4(),
+      bankName: this.bankName,
+      accountNumber: this.accountNumber
+    };
+    
+    this.bankDetailsCollection.add(newBankDetail)
       .then((docRef) => {
         console.log('Bank detail added successfully!');
-        this.bankDetails.push({ id: docRef.id, ...newBankDetail });
+        this.bankDetails.push(newBankDetail);
         this.bankName = '';
         this.accountNumber = '';
       })
@@ -37,13 +47,11 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.firestore.collection<BankDetail>('bankDetails').valueChanges().subscribe((data: BankDetail[]) => {
+    this.bankDetailsCollection.valueChanges().subscribe((data: BankDetail[]) => {
       this.bankDetails = data;
       console.log(this.bankDetails); // log the bankDetails array to check that it's correct
     });
   }
-  
-  
   
   removeBankDetails(index: number) {
     const accountNumber = this.bankDetails[index].accountNumber;
@@ -63,9 +71,6 @@ export class DashboardComponent implements OnInit {
         console.error('Error finding bank detail: ', error);
       });
   }
-  
-  
-  
   
   logout() {
     this.auth.logout();

@@ -1,16 +1,19 @@
 <h2>Bank Details Form</h2>
-<form>
+<form (submit)="addBankDetails()">
   <div>
     <label for="bankName">Bank Name:</label>
-    <input type="text" name="bankName" [(ngModel)]="bankName"> </div>
-    <div>
-      <label for="accountNumber">Account Number:</label>
-      <input type="text" name="accountNumber" [(ngModel)]="accountNumber">
-    </div>
-    <button type="button" (click)="addBankDetails()">Add Bank Details</button>
-  </form>
+    <input type="text" name="bankName" [(ngModel)]="bankName">
+  </div>
+  <div>
+    <label for="accountNumber">Account Number:</label>
+    <input type="text" name="accountNumber" [(ngModel)]="accountNumber">
+  </div>
   
-  <button type="button" (click)="logout()">Logout</button>
+  <button type="submit">Add Bank Details</button>
+</form>
+
+<button type="button" (click)="logout()">Logout</button>
+
 <ul>
   <li *ngFor="let bankDetail of bankDetails; let i = index">
     <span>{{bankDetail.bankName}}</span>
@@ -18,4 +21,3 @@
     <button type="button" (click)="removeBankDetails(i)">Remove</button>
   </li>
 </ul>
-<!-- <button type="button" (click)="logout()">Logout</button> -->

@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AngularFireModule } from '@angular/fire/compat'
@@ -11,7 +10,8 @@ import { DashboardComponent } from './component/dashboard/dashboard.component';
 import { FormsModule } from '@angular/forms';
 import { ForgotPasswordComponent } from './component/forgot-password/forgot-password.component';
 import { VarifyEmailComponent } from './component/varify-email/varify-email.component';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -35,7 +35,8 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
         measurementId: "G-QFZQV9BK8Q"
       }
     ),
-    FormsModule
+    FormsModule,
+    AngularFirestoreModule
   ],  
   providers: [],
   bootstrap: [AppComponent]
